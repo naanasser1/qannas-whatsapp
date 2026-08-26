@@ -1,0 +1,9 @@
+.env
+*.db
+__pycache__/
+*.pyc
+.venv/
+venv/
+agent_home/runs/
+# نستثني .claude في جذر المشروع فقط — مجلد المهارة تحت agent_home يجب أن يُرفع
+/.claude/
