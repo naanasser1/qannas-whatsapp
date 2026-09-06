@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""يبني صفحة الويب العربية لدفعة قنص من leads.json.
+"""يبني صفحة الويب العربية لدفعة قناص من leads.json.
 
     python build_board.py leads.json --out board.html
 
 الناتج ملف واحد مكتفٍ ذاتياً (بلا موارد خارجية عدا خطوط Google) وجاهز للنشر
-بأداة Artifact مباشرة: بطاقة لكل متجر بملاحظاتها وحلها ورسالتها مع زر نسخ،
-قسم للمشاريع المفتوحة، وقسم للمنهجية وحدود التحقق.
+بأداة Artifact مباشرة: التقرير اليومي، بطاقة لكل فرصة بملاحظات الفحص ودرجتها
+ورسالتها مع زر نسخ وصانع القرار، وقسم المشاريع المفتوحة، وحدود التحقق.
 """
 import argparse
 import html as html_mod
@@ -14,25 +14,32 @@ import json
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import qannas_lib as lib  # noqa: E402
+
 TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "board_template.html")
 
 DEFAULTS = {
-    "title": "قنص متاجر السعودية",
-    "headline": "دفعة اليوم من المتاجر",
-    "sub": "كل متجر مع ثلاث ملاحظات موثّقة من موقعه الرسمي، والحل المقترح بـ UGC والموشن ديزاين، ورسالة جاهزة تنتهي بعرض نموذج مجاني.",
+    "title": "قناص — فرص اليوم",
+    "headline": "دفعة اليوم من الفرص التجارية",
+    "sub": "كل شركة مع ملاحظات موثّقة من موقعها الرسمي، ودرجة من ١٠٠، والفرصة الأساسية، ورسالة جاهزة تنتهي بعرض نموذج مجاني صغير.",
     "projects_note": "المنصتان تمنعان القراءة الآلية، فهذه روابط مرشّحة من نتائج البحث ولم يُتحقق من كونها ما زالت مفتوحة. افتح كل رابط قبل التقديم.",
-    "method": "زيارة الموقع الرسمي لكل متجر وفحص وسائط المنتج، ووجود الفيديو في الرئيسية وصفحات الأقسام، والقنوات المعلنة، وطريقة عرض نقاط البيع.",
-    "limits": "الملاحظات مبنية على المواقع الرسمية فقط. افتح حساب كل متجر على تيك توك وإنستقرام قبل الإرسال لتأكيد الملاحظات المتعلقة بالقنوات.",
-    "next_step": "ابدأ بالمتاجر التي لا تملك أي فيديو — الفجوة عندها سهلة الإثبات في سطر واحد.",
+    "method": "زيارة الموقع الرسمي لكل شركة وفحص تجربة الاستخدام والواجهة والهوية وصور المنتجات وحداثة الموقع، ثم البحث عن المحتوى الإعلاني العام المتاح.",
+    "limits": "الملاحظات مبنية على المواقع الرسمية فقط. افتح حسابات كل شركة على تيك توك وإنستقرام قبل الإرسال لتأكيد الملاحظات المتعلقة بالإعلانات.",
+    "next_step": "ابدأ بالفرص المصنّفة HOT — الفجوة عندها أوضح وأسهل إثباتاً في سطر واحد.",
 }
 
 
-def _stats_block(stores, projects):
-    flaws = sum(len(s.get("flaws", [])) for s in stores)
+def _stats_block(leads, projects):
+    notes = sum(len(v) for l in leads for v in l["audit"].values())
+    hot = sum(1 for l in leads if "HOT" in l["tier"])
+    top = max((l["total"] for l in leads), default=0)
     tiles = [
-        (str(len(stores)), "متاجر في الدفعة"),
-        (str(flaws), "ملاحظة على المحتوى المرئي"),
-        (str(len(projects)), "مشاريع مرشّحة للتقديم"),
+        (str(len(leads)), "فرصة في الدفعة"),
+        (str(hot), "فرصة بتصنيف HOT"),
+        (str(top), "أعلى درجة"),
+        (str(notes), "ملاحظة موثّقة"),
+        (str(len(projects)), "مشروع مرشّح"),
     ]
     inner = "".join(
         f'<div class="stat"><b>{html_mod.escape(v)}</b>'
@@ -42,23 +49,28 @@ def _stats_block(stores, projects):
     return f'<div class="stats">{inner}</div>'
 
 
+def _js(value):
+    """JSON آمن للإدراج داخل وسم script."""
+    return json.dumps(value, ensure_ascii=False).replace("</", "<\\/")
+
+
 def build(data, out_path):
     meta = data.get("meta", {})
-    stores = data.get("stores", [])
-    projects = data.get("projects", [])
-    if not stores:
-        sys.exit("leads.json لا يحتوي على أي متجر في مفتاح stores")
-
-    for i, s in enumerate(stores, start=1):
-        s.setdefault("id", i)
+    leads = data["leads"]
+    projects = list(data.get("upwork", [])) + list(data.get("mostaql", []))
+    projects.sort(key=lambda x: -x["score"])
 
     with open(TEMPLATE, encoding="utf-8") as fh:
         page = fh.read()
 
+    report = meta.get("report", {}) or {}
+    report.setdefault("top3", [])
+
     subs = {
-        "__STORES__": json.dumps(stores, ensure_ascii=False),
-        "__PROJECTS__": json.dumps(projects, ensure_ascii=False),
-        "__STATS__": _stats_block(stores, projects),
+        "__LEADS__": _js(leads),
+        "__PROJECTS__": _js(projects),
+        "__REPORT__": _js(report),
+        "__STATS__": _stats_block(leads, projects),
         "__DATE_AR__": html_mod.escape(meta.get("date_ar", meta.get("date", ""))),
     }
     for key, default in DEFAULTS.items():
@@ -77,13 +89,11 @@ def build(data, out_path):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="بناء صفحة الويب لدفعة قنص")
+    ap = argparse.ArgumentParser(description="بناء صفحة الويب لدفعة قناص")
     ap.add_argument("leads", help="مسار ملف leads.json")
     ap.add_argument("--out", required=True, help="مسار ملف html الناتج")
     args = ap.parse_args()
-    with open(args.leads, encoding="utf-8") as fh:
-        data = json.load(fh)
-    print(build(data, args.out))
+    print(build(lib.load(args.leads), args.out))
 
 
 if __name__ == "__main__":

@@ -16,6 +16,8 @@
   --accent-soft:#e2ece9;
   --signal:#9a6410;
   --signal-soft:#f6eddc;
+  --hot:#a8412c;
+  --hot-soft:#f8e5df;
   --shadow:0 1px 2px rgba(26,28,27,.06), 0 8px 24px -18px rgba(26,28,27,.5);
 }
 @media (prefers-color-scheme: dark){
@@ -31,6 +33,8 @@
     --accent-soft:#1e2e2b;
     --signal:#d9a95e;
     --signal-soft:#2b2519;
+    --hot:#e08b74;
+    --hot-soft:#33201a;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
   }
 }
@@ -46,6 +50,8 @@
   --accent-soft:#1e2e2b;
   --signal:#d9a95e;
   --signal-soft:#2b2519;
+  --hot:#e08b74;
+  --hot-soft:#33201a;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
 }
 
@@ -60,7 +66,7 @@ body{
   line-height:1.75;
   -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:1040px;margin:0 auto;padding:48px 22px 96px;display:flex;flex-direction:column;gap:40px}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 22px 96px;display:flex;flex-direction:column;gap:44px}
 
 /* ---------- header ---------- */
 header{display:flex;flex-direction:column;gap:14px;border-bottom:1px solid var(--line);padding-bottom:28px}
@@ -72,7 +78,7 @@ h1{
   font-family:Rubik,"IBM Plex Sans Arabic",sans-serif;font-weight:800;
   font-size:clamp(30px,5vw,44px);line-height:1.25;margin:0;text-wrap:balance;letter-spacing:-.01em;
 }
-.sub{margin:0;color:var(--ink-2);max-width:62ch}
+.sub{margin:0;color:var(--ink-2);max-width:64ch}
 .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 .stat{
   background:var(--surface);border:1px solid var(--line);border-radius:10px;
@@ -89,10 +95,22 @@ h2{
 h2::after{content:"";flex:1;height:1px;background:var(--line)}
 .section{display:flex;flex-direction:column;gap:18px}
 
-/* ---------- store card ---------- */
+/* ---------- daily report ---------- */
+.report{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:760px){.report{grid-template-columns:1fr 1fr}}
+.rep{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;box-shadow:var(--shadow);
+}
+.rep .label{margin:0 0 6px}
+.rep p{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.7}
+.rep ol{margin:0;padding-inline-start:20px;font-size:14.5px;color:var(--ink-2);line-height:1.8}
+.rep.span2{grid-column:1/-1}
+
+/* ---------- lead card ---------- */
 .card{
   background:var(--surface);border:1px solid var(--line);border-radius:14px;
-  box-shadow:var(--shadow);overflow:hidden;
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px;
 }
 .card-head{
   display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px;
@@ -106,33 +124,56 @@ h2::after{content:"";flex:1;height:1px;background:var(--line)}
 .head-text{flex:1;min-width:230px}
 .head-text h3{margin:0;font-size:19px;font-weight:700;line-height:1.4}
 .head-text p{margin:2px 0 0;font-size:13.5px;color:var(--ink-2)}
-.links{display:flex;flex-direction:column;gap:2px;font-size:13px;text-align:left;direction:ltr}
-.links a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.badge{
+  font-size:12px;padding:2px 9px;border-radius:20px;
+  background:var(--accent-soft);color:var(--accent);white-space:nowrap;
+}
+.badge.hot{background:var(--hot-soft);color:var(--hot)}
+.badge.warn{background:var(--signal-soft);color:var(--signal)}
+.score{
+  font-family:"IBM Plex Mono",monospace;text-align:center;flex:none;
+  background:var(--accent-soft);border-radius:10px;padding:8px 14px;
+}
+.score b{display:block;font-size:24px;color:var(--accent);line-height:1.1;font-variant-numeric:tabular-nums}
+.score span{font-size:10.5px;letter-spacing:.1em;color:var(--ink-3)}
+.links{display:flex;flex-direction:column;gap:2px;font-size:13px;text-align:left;direction:ltr;min-width:180px}
+.links a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;word-break:break-all}
 .links a:hover,.links a:focus-visible{border-bottom-color:var(--accent)}
-.links span{color:var(--ink-3);font-family:"IBM Plex Mono",monospace;font-size:12px}
+.links span{color:var(--ink-3);font-family:"IBM Plex Mono",monospace;font-size:12px;direction:rtl;text-align:right}
 
-.card-body{padding:20px;display:grid;gap:20px;grid-template-columns:1fr}
-@media(min-width:820px){.card-body{grid-template-columns:1.05fr .95fr}}
+.card-body{padding:20px;display:grid;gap:22px;grid-template-columns:1fr}
+@media(min-width:860px){.card-body{grid-template-columns:1.05fr .95fr}}
 
 .label{
   font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3);margin:0 0 10px;
 }
-ol.flaws{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;counter-reset:f}
-ol.flaws li{
-  counter-increment:f;position:relative;padding-inline-start:32px;font-size:14.5px;color:var(--ink-2);line-height:1.7;
+.audit{display:flex;flex-direction:column;gap:14px}
+.aud-group h4{
+  margin:0 0 6px;font-size:13px;font-weight:600;color:var(--ink);
+  display:flex;align-items:center;gap:8px;
 }
-ol.flaws li::before{
-  content:counter(f);position:absolute;inset-inline-start:0;top:3px;
-  width:21px;height:21px;border-radius:50%;display:grid;place-items:center;
-  background:var(--signal-soft);color:var(--signal);
-  font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+.aud-group h4::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:var(--signal);flex:none;
 }
+.aud-group ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.aud-group li{
+  position:relative;padding-inline-start:16px;font-size:14px;color:var(--ink-2);line-height:1.7;
+}
+.aud-group li::before{
+  content:"";position:absolute;inset-inline-start:0;top:11px;
+  width:5px;height:5px;border-radius:50%;background:var(--line);
+}
+.aud-group.empty li{color:var(--ink-3);font-style:italic}
+
+.opps{margin-top:2px}
+.opps ol{margin:0;padding-inline-start:20px;font-size:14px;color:var(--ink-2);line-height:1.8}
 .solution{
   margin-top:16px;background:var(--accent-soft);border-radius:10px;padding:12px 14px;
-  font-size:14px;color:var(--ink);border:1px solid transparent;
+  font-size:14px;color:var(--ink);display:flex;flex-direction:column;gap:6px;
 }
-.solution strong{color:var(--accent);font-weight:600}
+.solution b{color:var(--accent);font-weight:600}
 
 .msg-col{display:flex;flex-direction:column}
 .msg{
@@ -147,6 +188,13 @@ ol.flaws li::before{
 }
 .copy:hover{opacity:.88}
 .copy:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.dm{
+  margin-top:12px;font-size:13px;color:var(--ink-2);
+  border-top:1px dashed var(--line);padding-top:10px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.dm a{color:var(--accent);text-decoration:none;direction:ltr;word-break:break-all}
+.dm a:hover{text-decoration:underline}
 
 /* ---------- projects ---------- */
 .proj-grid{display:grid;gap:14px;grid-template-columns:1fr}
@@ -155,18 +203,23 @@ ol.flaws li::before{
   background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
   display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);
 }
+.proj-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tag{
   font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;
-  align-self:flex-start;padding:2px 8px;border-radius:5px;
-  background:var(--accent-soft);color:var(--accent);
+  padding:2px 8px;border-radius:5px;background:var(--accent-soft);color:var(--accent);
 }
+.pscore{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);margin-inline-start:auto}
 .proj h4{margin:0;font-size:15px;font-weight:600;line-height:1.5}
 .proj p{margin:0;font-size:13.5px;color:var(--ink-2)}
-.proj a{
+.proj .why{color:var(--ink);border-inline-start:2px solid var(--accent);padding-inline-start:10px}
+.proj dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:12.5px;color:var(--ink-3)}
+.proj dt{font-weight:600}
+.proj dd{margin:0}
+.proj a.url{
   font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent);
   direction:ltr;text-align:left;word-break:break-all;text-decoration:none;
 }
-.proj a:hover{text-decoration:underline}
+.proj a.url:hover{text-decoration:underline}
 
 /* ---------- notes ---------- */
 .notes{
@@ -185,19 +238,24 @@ footer{color:var(--ink-3);font-size:13px;text-align:center;border-top:1px solid 
 <div class="wrap">
 
 <header>
-  <div class="eyebrow">تقرير يومي · __DATE_AR__</div>
+  <div class="eyebrow">تقرير قناص اليومي · __DATE_AR__</div>
   <h1>__HEADLINE__</h1>
   <p class="sub">__SUB__</p>
   __STATS__
 </header>
 
-<section class="section" id="stores">
-  <h2>الرسائل الجاهزة</h2>
+<section class="section" id="report">
+  <h2>التقرير اليومي</h2>
+  <div class="report" id="rep"></div>
+</section>
+
+<section class="section" id="leads">
+  <h2>الفرص والرسائل الجاهزة</h2>
   <div id="cards"></div>
 </section>
 
 <section class="section" id="projects">
-  <h2>مشاريع مفتوحة — مستقل و Upwork</h2>
+  <h2>مشاريع مفتوحة</h2>
   <p class="sub" style="margin-top:-8px">__PROJECTS_NOTE__</p>
   <div class="proj-grid" id="projs"></div>
 </section>
@@ -214,55 +272,120 @@ footer{color:var(--ink-3);font-size:13px;text-align:center;border-top:1px solid 
   </dl>
 </section>
 
-<footer>جميع الرسائل قابلة للنسخ مباشرة · النسخة الجدولية متاحة كملف Excel للرفع على Google Sheets</footer>
+<footer>جميع الرسائل قابلة للنسخ مباشرة · النسخة الجدولية متاحة كملف Excel بأربعة تبويبات للرفع على Google Sheets</footer>
 </div>
 
 <script>
-const STORES = __STORES__;
+const LEADS = __LEADS__;
 const PROJECTS = __PROJECTS__;
+const REPORT = __REPORT__;
 
-const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const has = v => Array.isArray(v) ? v.length > 0 : !!(v && String(v).trim());
 
-document.getElementById('cards').innerHTML = STORES.map(s => `
-<article class="card" style="margin-bottom:18px">
+const AUDIT_GROUPS = [
+  ['ux', 'تجربة الاستخدام — UX'],
+  ['ui', 'الواجهة البصرية — UI'],
+  ['brand', 'الهوية والشعار'],
+  ['images', 'صور المنتجات'],
+  ['ads', 'الإعلانات والمحتوى المرئي'],
+];
+
+function auditHtml(a){
+  return AUDIT_GROUPS.filter(([k]) => has(a[k])).map(([k, title]) => `
+    <div class="aud-group">
+      <h4>${esc(title)}</h4>
+      <ul>${a[k].map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+function dmHtml(d){
+  const bits = [];
+  if(has(d.name)) bits.push(`<span>${esc(d.name)}${has(d.position) ? ' — ' + esc(d.position) : ''}</span>`);
+  if(has(d.email)) bits.push(`<a href="mailto:${esc(d.email)}">${esc(d.email)}</a>`);
+  if(has(d.linkedin)) bits.push(`<a href="${esc(d.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`);
+  if(has(d.instagram)) bits.push(`<a href="${esc(d.instagram)}" target="_blank" rel="noopener">${esc(d.instagram)}</a>`);
+  if(!bits.length) return '';
+  return `<div class="dm"><p class="label" style="margin:0 0 4px">صانع القرار</p>${bits.join('')}</div>`;
+}
+
+document.getElementById('rep').innerHTML = [
+  ['🔥 أفضل ٣ فرص اليوم', REPORT.top3, true],
+  ['💰 أفضل فرصة تجارية', REPORT.best_commercial],
+  ['🎨 أفضل فرصة تصميم', REPORT.best_design],
+  ['🎥 أفضل فرصة فيديو / UGC', REPORT.best_video],
+  ['💼 أفضل مشروع Upwork', REPORT.best_upwork],
+  ['💼 أفضل مشروع مستقل', REPORT.best_mostaql],
+].filter(([, v]) => has(v)).map(([title, v, isList]) => `
+  <div class="rep${isList ? ' span2' : ''}">
+    <p class="label">${esc(title)}</p>
+    ${isList ? `<ol>${v.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : `<p>${esc(v)}</p>`}
+  </div>`).join('');
+
+document.getElementById('cards').innerHTML = LEADS.map(l => `
+<article class="card">
   <div class="card-head">
-    <div class="idx">${s.id}</div>
+    <div class="idx">${l.id}</div>
     <div class="head-text">
-      <h3>${esc(s.name)}</h3>
-      <p>${esc(s.niche)}</p>
+      <h3>${esc(l.company)}</h3>
+      <p>${esc(l.country)} · ${esc(l.industry)}</p>
+      <div class="badges">
+        <span class="badge ${l.tier.includes('HOT') ? 'hot' : ''}">${esc(l.tier)}</span>
+        <span class="badge">${esc(l.recommended_service)}</span>
+        ${has(l.freshness) ? `<span class="badge warn">${esc(l.freshness)}</span>` : ''}
+      </div>
     </div>
+    <div class="score"><b>${l.total}</b><span>SCORE</span></div>
     <div class="links">
-      <a href="${s.site}" target="_blank" rel="noopener">${esc(s.site.replace(/^https?:\/\//,'').replace(/\/$/,''))}</a>
-      <span>${esc(s.contact)}</span>
+      <a href="${esc(l.website)}" target="_blank" rel="noopener">${esc(String(l.website).replace(/^https?:\/\//,'').replace(/\/$/,''))}</a>
+      ${has(l.contact) ? `<span>${esc(l.contact)}</span>` : ''}
     </div>
   </div>
   <div class="card-body">
     <div>
-      <p class="label">الملاحظات على المحتوى المرئي</p>
-      <ol class="flaws">${s.flaws.map(f => `<li>${esc(f)}</li>`).join('')}</ol>
-      <div class="solution"><strong>الحل المقترح:</strong> ${esc(s.solution)}</div>
+      <p class="label">ما رُصد في الفحص</p>
+      <div class="audit">${auditHtml(l.audit)}</div>
+      ${has(l.opportunities) ? `<div class="opps"><p class="label" style="margin-top:16px">أكبر ٣ فرص</p>
+        <ol>${l.opportunities.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>` : ''}
+      <div class="solution">
+        <span><b>الفرصة الأساسية:</b> ${esc(l.primary_opportunity)}</span>
+        <span><b>الخدمة المعروضة:</b> ${esc(l.recommended_service)}</span>
+        ${has(l.free_sample) ? `<span><b>النموذج المجاني:</b> ${esc(l.free_sample)}</span>` : ''}
+      </div>
     </div>
     <div class="msg-col">
       <p class="label">الرسالة الجاهزة</p>
-      <div class="msg">${esc(s.message)}</div>
-      <button class="copy" data-i="${s.id}">نسخ الرسالة</button>
+      <div class="msg">${esc(l.message)}</div>
+      <button class="copy" data-i="${l.id}">نسخ الرسالة</button>
+      ${dmHtml(l.decision_maker)}
     </div>
   </div>
 </article>`).join('');
 
 document.getElementById('projs').innerHTML = PROJECTS.map(p => `
 <article class="proj">
-  <span class="tag">${esc(p.platform)}</span>
+  <div class="proj-top">
+    <span class="tag">${esc(p.platform)}</span>
+    <span class="tag">${esc(p.tier)}</span>
+    <span class="pscore">${p.score}/100</span>
+  </div>
   <h4>${esc(p.title)}</h4>
-  <p>${esc(p.note)}</p>
-  <a href="${p.url}" target="_blank" rel="noopener">${esc(p.url)}</a>
+  <p>${esc(p.summary)}</p>
+  ${has(p.why_fits) ? `<p class="why">${esc(p.why_fits)}</p>` : ''}
+  ${has(p.proposal_angle) ? `<p><b>زاوية العرض:</b> ${esc(p.proposal_angle)}</p>` : ''}
+  <dl>
+    <dt>الميزانية</dt><dd>${esc(p.budget)}</dd>
+    <dt>النشر</dt><dd>${esc(p.posted)}</dd>
+    <dt>المهارات</dt><dd>${esc(p.skills)}</dd>
+  </dl>
+  <a class="url" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.url)}</a>
 </article>`).join('');
 
 document.addEventListener('click', e => {
   const btn = e.target.closest('.copy');
   if(!btn) return;
-  const s = STORES.find(x => x.id === Number(btn.dataset.i));
-  navigator.clipboard.writeText(s.message).then(() => {
+  const l = LEADS.find(x => x.id === Number(btn.dataset.i));
+  navigator.clipboard.writeText(l.message).then(() => {
     btn.textContent = 'تم النسخ';
     setTimeout(() => btn.textContent = 'نسخ الرسالة', 1600);
   }).catch(() => { btn.textContent = 'تعذّر النسخ'; setTimeout(() => btn.textContent = 'نسخ الرسالة', 1600); });
